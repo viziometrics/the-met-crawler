@@ -1,10 +1,10 @@
+import re
 import csv
 import ssl
 import time 
 import random
 import urllib2
 import requests
-import validators
 from BeautifulSoup import BeautifulSoup
 
 
@@ -16,6 +16,7 @@ def get_webpage(web_page):
     return html_page.text
 
 def parse_and_get_image(html_page):
+    print html_page
     soup = BeautifulSoup(html_page)
     raw_img = soup.find("a", {"name":"#collectionImage"}).find('img')['ng-src']
     img_src = raw_img.split("'")[1]
@@ -53,16 +54,23 @@ def read_meta_csv(file_name):
             except Exception as e: 
                 print str(e)
                 images_not_found += 1
-            time.sleep(2.8)
+            time.sleep(random.randint(1,9))
 
     print str(images_found) + " images found"
     print str(images_not_found) + " images not found"
 
 def isValidUrl(input_string):
-    return validators.url(input_string)
+    regex = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+        r'localhost|' #localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?' # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    return regex.match(input_string)
 
 def main():
-    file_name = "MetObjects.csv"
+    file_name = "MetObjects2.csv"
     read_meta_csv(file_name)
 
 if __name__== "__main__":
